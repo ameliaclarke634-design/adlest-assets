@@ -98,27 +98,27 @@
           </svg>
           <span>Change Currency</span>
         </div>
-        <div class="adl-extra-row-right"><span id="adl-curr-arrow">▼</span></div>
+        <div class="adl-extra-row-right"><span id="adl-current-currency-text">USD</span> <span id="adl-curr-arrow">▼</span></div>
       </div>
 
       <div class="adl-currency-scroll-content" id="currencyScrollContent">
-        <a href="javascript:void(0)" class="adl-currency-item">USD ($)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">EUR (€)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">CAD ($)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">GBP (£)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">AUD ($)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">NZD ($)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">BRL (R$)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">MXN ($)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">SEK (kr)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">NOK (kr)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">DKK (kr)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">PLN (zł)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">JPY (¥)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">INR (₹)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">MYR (RM)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">SGD ($)</a>
-        <a href="javascript:void(0)" class="adl-currency-item">CHF (CHF)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('USD')">USD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('EUR')">EUR (€)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('CAD')">CAD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('GBP')">GBP (£)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('AUD')">AUD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('NZD')">NZD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('BRL')">BRL (R$)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('MXN')">MXN ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('SEK')">SEK (kr)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('NOK')">NOK (kr)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('DKK')">DKK (kr)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('PLN')">PLN (zł)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('JPY')">JPY (¥)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('INR')">INR (₹)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('MYR')">MYR (RM)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('SGD')">SGD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item" onclick="changeSelectedCurrency('CHF')">CHF (CHF)</a>
       </div>
 
       <a href="javascript:void(0)" class="adl-extra-row">
@@ -164,6 +164,16 @@ function toggleMobMenu(){var m=document.getElementById("sideMenu"),o=document.ge
 
 /* Accordion Toggle Logic for Currency Scroll Panel */
 function toggleCurrencyAccordion(){var content=document.getElementById("currencyScrollContent");var arrow=document.getElementById("adl-curr-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
+
+/* Logic to automatically change selected currency text inside mobile panel */
+function changeSelectedCurrency(currencyCode) {
+  var label = document.getElementById("adl-current-currency-text");
+  if(label) {
+    label.textContent = currencyCode;
+  }
+  // Automatically close accordion once selected
+  toggleCurrencyAccordion();
+}
 
 /* Accordion Toggle Logic for About ADLEST Box */
 function toggleSheinInfoAccordion(){var content=document.getElementById("sheinInfoContent");var arrow=document.getElementById("adl-acc-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
