@@ -70,24 +70,33 @@
     <div class="adl-mob-shein-extra-panel">
       <a href="javascript:void(0)" class="adl-extra-row">
         <div class="adl-extra-row-left">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9H10.5a2.5 2.5 0 0 0 0 5H14a2.5 2.5 0 0 1 0 5H9"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v12M15 9H10.5a2.5 2.5 0 0 0 0 5H14a2.5 2.5 0 0 1 0 5H9"></path>
+          </svg>
           <span>Change Currency</span>
         </div>
-        <div class="adl-extra-row-right">USD <span>›</span></div>
+        <div class="adl-extra-row-right">USD <span>&nbsp;</span></div>
       </a>
 
       <a href="javascript:void(0)" class="adl-extra-row">
         <div class="adl-extra-row-left">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
           <span>Change Language</span>
         </div>
-        <div class="adl-extra-row-right">English <span>›</span></div>
+        <div class="adl-extra-row-right">English <span>&nbsp;</span></div>
       </a>
 
       <div class="adl-extra-row adl-accordion-header" onclick="toggleSheinInfoAccordion()">
         <div class="adl-extra-row-left">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
-          <span style="text-transform: uppercase;">ADLEST Info</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4M12 8h.01"></path>
+          </svg>
+          <span style="text-transform: uppercase;">SHEIN Info</span>
         </div>
         <div class="adl-extra-row-right"><span id="adl-acc-arrow">▼</span></div>
       </div>
@@ -110,7 +119,7 @@ function renderNavigation(){let d='<div class="adl-nav-item-wrapper"><a href="ja
 
 function toggleMobMenu(){var m=document.getElementById("sideMenu"),o=document.getElementById("overlay-mob");if(m.style.left==="0px"){m.style.left="-100%";o.style.display="none"}else{m.style.left="0px";o.style.display="block"}}
 
-/* Accordion Toggle Logic for ADLEST Info Box */
+/* Accordion Toggle Logic for SHEIN Info Box */
 function toggleSheinInfoAccordion(){var content=document.getElementById("sheinInfoContent");var arrow=document.getElementById("adl-acc-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
 
 document.querySelectorAll('.adl-live-input').forEach(i=>{i.addEventListener('input',function(){const q=this.value.trim();const r=this.parentElement.nextElementSibling;if(q.length<1){r.style.display='none';return}fetch(`/api/search?q=${encodeURIComponent(q)}`).then(res=>res.json()).then(d=>{const prod=d.products||[];if(prod&&prod.length>0){let h='';prod.slice(0,6).forEach(p=>{let imgUrl=p.images&&p.images[0]?p.images[0].url:'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';let titleStr=p.name||p.title||'Product';let priceStr=p.unitPrice?p.unitPrice.formatted:'';h+=`<a href="/products/${p.slug||p.id}" class="adl-search-item"><img src="${imgUrl}"><div class="adl-item-info"><span class="adl-item-title">${titleStr}</span><span class="adl-item-price">${priceStr}</span></div></a>`});r.innerHTML=h;r.style.display='block'}else{r.style.display='none'}}).catch(()=>{r.style.display='none'})})});
