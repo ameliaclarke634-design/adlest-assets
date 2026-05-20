@@ -54,6 +54,28 @@
   border-bottom: 1px solid #eee;
   font-weight: 500;
 }
+/* Scrollable Currency Container CSS */
+.adl-currency-scroll-content {
+  display: none;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #fdfdfd;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+.adl-currency-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 35px;
+  font-size: 13px;
+  color: #444;
+  text-decoration: none;
+  font-weight: 500;
+}
+.adl-currency-item:hover {
+  background: #f5f5f5;
+  color: #000;
+}
 </style>
 
 <div class="adl-desktop-view"><div class="adl-shein-header"><div class="adl-header-top"><a href="/" class="adl-logo">ADLEST</a><div class="adl-search-container"><form action="/search" method="get" class="adl-search-wrapper"><input type="text" name="q" placeholder="Search brands, items..." class="adl-search-input adl-live-input" autocomplete="off"><button type="submit" class="adl-search-btn"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#fff"/></svg></button></form><div class="adl-live-search-results"></div></div><div class="adl-header-icons"><div class="adl-desktop-heart-wrapper" style="position:relative;display:inline-block;cursor:pointer;" onclick="handleHeaderWlClick(event)"><a href="/pages/wishlist" class="adl-icon-link" style="pointer-events:none;"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" id="adl-dk-heart-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" id="adl-dk-heart-path"></path></svg></a><span id="adl-dk-heart-badge" style="position:absolute;top:-6px;right:-8px;width:16px;height:16px;border-radius:50%;background:#ff0000;color:#ffffff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.2);pointer-events:none;">0</span></div><a href="https://adlest.store/contact/something-else" class="adl-icon-link"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="#fff" fill="none"/></svg></a><div class="adl-cart-wrapper"><a href="/cart" class="adl-icon-link"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="#fff" fill="none"/></svg><span class="fw-cart-count">0</span></a><div class="adl-mini-cart"><span class="adl-mini-cart-title">Shopping Cart</span><div class="adl-mini-cart-items" id="adl-desktop-mini-items"><div class="adl-mini-cart-empty">Your cart is empty</div></div><a href="/cart" class="adl-mini-btn">View Cart</a></div></div></div></div><div class="adl-nav-outer"><div class="adl-nav-arrow arrow-left" id="scroll-left">❮</div><div class="adl-nav-scroll-container" id="adl-scroll-menu"><div class="adl-nav-list" id="adl-dynamic-nav"></div></div><div class="adl-nav-arrow arrow-right" id="scroll-right">❯</div></div></div></div>
@@ -68,7 +90,7 @@
     <div class="adl-mob-scroll-area" id="adl-dynamic-mob-nav"></div>
     
     <div class="adl-mob-shein-extra-panel">
-      <a href="javascript:void(0)" class="adl-extra-row">
+      <div class="adl-extra-row adl-accordion-header" onclick="toggleCurrencyAccordion()">
         <div class="adl-extra-row-left">
           <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8">
             <circle cx="12" cy="12" r="10"></circle>
@@ -76,8 +98,28 @@
           </svg>
           <span>Change Currency</span>
         </div>
-        <div class="adl-extra-row-right">USD <span>&nbsp;</span></div>
-      </a>
+        <div class="adl-extra-row-right"><span id="adl-curr-arrow">▼</span></div>
+      </div>
+
+      <div class="adl-currency-scroll-content" id="currencyScrollContent">
+        <a href="javascript:void(0)" class="adl-currency-item">USD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">EUR (€)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">CAD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">GBP (£)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">AUD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">NZD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">BRL (R$)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">MXN ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">SEK (kr)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">NOK (kr)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">DKK (kr)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">PLN (zł)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">JPY (¥)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">INR (₹)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">MYR (RM)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">SGD ($)</a>
+        <a href="javascript:void(0)" class="adl-currency-item">CHF (CHF)</a>
+      </div>
 
       <a href="javascript:void(0)" class="adl-extra-row">
         <div class="adl-extra-row-left">
@@ -96,7 +138,7 @@
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M12 16v-4M12 8h.01"></path>
           </svg>
-          <span style="text-transform: uppercase;">SHEIN Info</span>
+          <span style="text-transform: uppercase;">About ADLEST</span>
         </div>
         <div class="adl-extra-row-right"><span id="adl-acc-arrow">▼</span></div>
       </div>
@@ -104,8 +146,9 @@
       <div class="adl-accordion-content" id="sheinInfoContent">
         <a href="https://adlest.store/contact/shipping-delivery" class="adl-sub-extra-row">Shipping Info</a>
         <a href="https://adlest.store/contact/returns-exchanges" class="adl-sub-extra-row">Return Policy</a>
-        <a href="https://adlest.store/contact/refund-policy" class="adl-sub-extra-row">Refund</a>
-        <a href="https://adlest.store/contact/payment-methods" class="adl-sub-extra-row">How to Pay</a>
+        <a href="https://adlest.store/contact/refund-policy" class="adl-sub-extra-row">Refund Policy</a>
+        <a href="https://adlest.store/contact/how-to-order" class="adl-sub-extra-row">How to Order</a>
+        <a href="https://adlest.store/contact/contact-us" class="adl-sub-extra-row">Contact Us</a>
       </div>
     </div>
   </div>
@@ -119,7 +162,10 @@ function renderNavigation(){let d='<div class="adl-nav-item-wrapper"><a href="ja
 
 function toggleMobMenu(){var m=document.getElementById("sideMenu"),o=document.getElementById("overlay-mob");if(m.style.left==="0px"){m.style.left="-100%";o.style.display="none"}else{m.style.left="0px";o.style.display="block"}}
 
-/* Accordion Toggle Logic for SHEIN Info Box */
+/* Accordion Toggle Logic for Currency Scroll Panel */
+function toggleCurrencyAccordion(){var content=document.getElementById("currencyScrollContent");var arrow=document.getElementById("adl-curr-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
+
+/* Accordion Toggle Logic for About ADLEST Box */
 function toggleSheinInfoAccordion(){var content=document.getElementById("sheinInfoContent");var arrow=document.getElementById("adl-acc-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
 
 document.querySelectorAll('.adl-live-input').forEach(i=>{i.addEventListener('input',function(){const q=this.value.trim();const r=this.parentElement.nextElementSibling;if(q.length<1){r.style.display='none';return}fetch(`/api/search?q=${encodeURIComponent(q)}`).then(res=>res.json()).then(d=>{const prod=d.products||[];if(prod&&prod.length>0){let h='';prod.slice(0,6).forEach(p=>{let imgUrl=p.images&&p.images[0]?p.images[0].url:'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';let titleStr=p.name||p.title||'Product';let priceStr=p.unitPrice?p.unitPrice.formatted:'';h+=`<a href="/products/${p.slug||p.id}" class="adl-search-item"><img src="${imgUrl}"><div class="adl-item-info"><span class="adl-item-title">${titleStr}</span><span class="adl-item-price">${priceStr}</span></div></a>`});r.innerHTML=h;r.style.display='block'}else{r.style.display='none'}}).catch(()=>{r.style.display='none'})})});
