@@ -130,7 +130,7 @@
           <span>Change Language</span>
         </div>
         <div class="adl-extra-row-right">English <span>&nbsp;</span></div>
-      </a>
+      </div>
 
       <div class="adl-extra-row adl-accordion-header" onclick="toggleSheinInfoAccordion()">
         <div class="adl-extra-row-left">
@@ -177,6 +177,37 @@ function changeSelectedCurrency(currencyCode) {
 
 /* Accordion Toggle Logic for About ADLEST Box */
 function toggleSheinInfoAccordion(){var content=document.getElementById("sheinInfoContent");var arrow=document.getElementById("adl-acc-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
+
+// =========================================================================
+// 🔥 NEW ADDITION: AUTOMATIC SEARCH PLACEHOLDER ROTATION LOGIC (SHEIN STYLE)
+// =========================================================================
+const adlestSearchKeywords = [
+  "Mini Dresses",
+  "Oversized Tees",
+  "Y2K Fashion",
+  "Crop Tops",
+  "Summer Beachwear",
+  "Cargo Pants",
+  "Luxury Jackets",
+  "Denim Skirts",
+  "Cozy Hoodies",
+  "Aesthetic Tops"
+];
+let adlestKeywordIndex = 0;
+function rotateAdlestPlaceholders() {
+  const inputs = document.querySelectorAll('.adl-live-input');
+  if(inputs.length === 0) return;
+  const nextText = `Search for "${adlestSearchKeywords[adlestKeywordIndex]}"...`;
+  inputs.forEach(input => {
+    if (document.activeElement !== input && input.value.trim() === "") {
+      input.setAttribute('placeholder', nextText);
+    }
+  });
+  adlestKeywordIndex = (adlestKeywordIndex + 1) % adlestSearchKeywords.length;
+}
+rotateAdlestPlaceholders();
+setInterval(rotateAdlestPlaceholders, 3000);
+// =========================================================================
 
 document.querySelectorAll('.adl-live-input').forEach(i=>{i.addEventListener('input',function(){const q=this.value.trim();const r=this.parentElement.nextElementSibling;if(q.length<1){r.style.display='none';return}fetch(`/api/search?q=${encodeURIComponent(q)}`).then(res=>res.json()).then(d=>{const prod=d.products||[];if(prod&&prod.length>0){let h='';prod.slice(0,6).forEach(p=>{let imgUrl=p.images&&p.images[0]?p.images[0].url:'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';let titleStr=p.name||p.title||'Product';let priceStr=p.unitPrice?p.unitPrice.formatted:'';h+=`<a href="/products/${p.slug||p.id}" class="adl-search-item"><img src="${imgUrl}"><div class="adl-item-info"><span class="adl-item-title">${titleStr}</span><span class="adl-item-price">${priceStr}</span></div></a>`});r.innerHTML=h;r.style.display='block'}else{r.style.display='none'}}).catch(()=>{r.style.display='none'})})});
 document.addEventListener('click',function(e){if(!e.target.closest('.adl-search-container')&&!e.target.closest('.adl-mobile-search-box')&&!e.target.classList.contains('adl-live-input')){document.querySelectorAll('.adl-live-search-results').forEach(r=>r.style.display='none')}});
