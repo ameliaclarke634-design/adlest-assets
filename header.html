@@ -76,6 +76,59 @@
   background: #f5f5f5;
   color: #000;
 }
+
+/* =========================================================================
+   🔥 NEW ADDITION: DISCOVERY SEARCH SUGGESTION UI (SHEIN LOOK)
+   ========================================================================= */
+.adl-discovery-wrapper {
+  padding: 15px;
+  text-align: left;
+}
+.adl-discovery-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 12px;
+  display: block;
+  letter-spacing: 0.5px;
+}
+.adl-discovery-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.adl-discovery-tag {
+  background: #f5f5f5;
+  color: #333 !important;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.adl-discovery-tag:hover {
+  background: #eee;
+  color: #000 !important;
+}
+.adl-suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  text-decoration: none;
+  color: #333 !important;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+}
+.adl-suggestion-item:hover {
+  background: #f9f9f9;
+}
+.adl-suggestion-item svg {
+  margin-right: 10px;
+  flex-shrink: 0;
+}
 </style>
 
 <div class="adl-desktop-view"><div class="adl-shein-header"><div class="adl-header-top"><a href="/" class="adl-logo">ADLEST</a><div class="adl-search-container"><form action="/search" method="get" class="adl-search-wrapper"><input type="text" name="q" placeholder="Search brands, items..." class="adl-search-input adl-live-input" autocomplete="off"><button type="submit" class="adl-search-btn"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#fff"/></svg></button></form><div class="adl-live-search-results"></div></div><div class="adl-header-icons"><div class="adl-desktop-heart-wrapper" style="position:relative;display:inline-block;cursor:pointer;" onclick="handleHeaderWlClick(event)"><a href="/pages/wishlist" class="adl-icon-link" style="pointer-events:none;"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" id="adl-dk-heart-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" id="adl-dk-heart-path"></path></svg></a><span id="adl-dk-heart-badge" style="position:absolute;top:-6px;right:-8px;width:16px;height:16px;border-radius:50%;background:#ff0000;color:#ffffff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.2);pointer-events:none;">0</span></div><a href="https://adlest.store/pages/contact-us" class="adl-icon-link"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="#fff" fill="none"/></svg></a><div class="adl-cart-wrapper"><a href="/cart" class="adl-icon-link"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="#fff" fill="none"/></svg><span class="fw-cart-count">0</span></a><div class="adl-mini-cart"><span class="adl-mini-cart-title">Shopping Cart</span><div class="adl-mini-cart-items" id="adl-desktop-mini-items"><div class="adl-mini-cart-empty">Your cart is empty</div></div><a href="/cart" class="adl-mini-btn">View Cart</a></div></div></div></div><div class="adl-nav-outer"><div class="adl-nav-arrow arrow-left" id="scroll-left">❮</div><div class="adl-nav-scroll-container" id="adl-scroll-menu"><div class="adl-nav-list" id="adl-dynamic-nav"></div></div><div class="adl-nav-arrow arrow-right" id="scroll-right">❯</div></div></div></div>
@@ -130,7 +183,7 @@
           <span>Change Language</span>
         </div>
         <div class="adl-extra-row-right">English <span>&nbsp;</span></div>
-      </div>
+      </a>
 
       <div class="adl-extra-row adl-accordion-header" onclick="toggleSheinInfoAccordion()">
         <div class="adl-extra-row-left">
@@ -171,7 +224,6 @@ function changeSelectedCurrency(currencyCode) {
   if(label) {
     label.textContent = currencyCode;
   }
-  // Automatically close accordion once selected
   toggleCurrencyAccordion();
 }
 
@@ -179,7 +231,7 @@ function changeSelectedCurrency(currencyCode) {
 function toggleSheinInfoAccordion(){var content=document.getElementById("sheinInfoContent");var arrow=document.getElementById("adl-acc-arrow");if(content.style.display==="block"){content.style.display="none";arrow.textContent="▼"}else{content.style.display="block";arrow.textContent="▲"}}
 
 // =========================================================================
-// 🔥 NEW ADDITION: AUTOMATIC SEARCH PLACEHOLDER ROTATION LOGIC (SHEIN STYLE)
+// 🔥 ROTATING SEARCH PLACEHOLDER LOGIC
 // =========================================================================
 const adlestSearchKeywords = [
   "Mini Dresses",
@@ -207,10 +259,132 @@ function rotateAdlestPlaceholders() {
 }
 rotateAdlestPlaceholders();
 setInterval(rotateAdlestPlaceholders, 3000);
+
+// =========================================================================
+// 🔥 NEW ADDITION: AUTO SUGGESTIONS & SEARCH DISCOVERY DATA (SHEIN EXACT STYLE)
+// =========================================================================
+const adlestDiscoveryTags = [
+  { text: "Summer dresses for women", url: "/search?q=summer+dresses+for+women" },
+  { text: "Dresses for women summer", url: "/search?q=dresses+for+women+summer" },
+  { text: "Brown shoulder bag", url: "/search?q=brown+shoulder+bag" },
+  { text: "Romantic dress", url: "/search?q=romantic+dress" },
+  { text: "Summer dress with sleeves", url: "/search?q=summer+dress+with+sleeves" },
+  { text: "Brown handbag", url: "/search?q=brown+handbag" },
+  { text: "Coffee brown purse", url: "/search?q=coffee+brown+purse" },
+  { text: "Man shirt", url: "/search?q=man+shirt" },
+  { text: "Hand bags for women", url: "/search?q=hand+bags+for+women" },
+  { text: "White hang bag", url: "/search?q=white+hang+bag" }
+];
+
+// Generates the initial "Search Discovery" view
+function getDiscoveryHTML() {
+  let html = `<div class="adl-discovery-wrapper">
+    <span class="adl-discovery-title">Search Discovery</span>
+    <div class="adl-discovery-tags">`;
+  adlestDiscoveryTags.forEach(tag => {
+    html += `<a href="${tag.url}" class="adl-discovery-tag">${tag.text}</a>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+// Generates text suggestion entries matching SHEIN's list style when letters are typed
+function getStaticSuggestionsHTML(query) {
+  let matched = adlestDiscoveryTags.filter(tag => tag.text.toLowerCase().includes(query.toLowerCase()));
+  if (matched.length === 0) {
+    // Fallback static keywords if no direct match in default discovery list
+    matched = adlestSearchKeywords
+      .filter(k => k.toLowerCase().includes(query.toLowerCase()))
+      .map(k => ({ text: k, url: `/search?q=${encodeURIComponent(k)}` }));
+  }
+  
+  if (matched.length === 0) return '';
+  
+  let html = '';
+  matched.slice(0, 5).forEach(m => {
+    html += `<a href="${m.url}" class="adl-suggestion-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" style="margin-right:10px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>${m.text}</span>
+    </a>`;
+  });
+  return html;
+}
+
+// Setup input interactions
+document.querySelectorAll('.adl-live-input').forEach(input => {
+  // 1. When Clicked/Focused -> Show Search Discovery immediately if empty
+  input.addEventListener('focus', function() {
+    const resultsContainer = this.parentElement.nextElementSibling;
+    if (this.value.trim() === "") {
+      resultsContainer.innerHTML = getDiscoveryHTML();
+      resultsContainer.style.display = 'block';
+    }
+  });
+
+  // 2. Typing Event Handle -> Hybrid dynamic products + custom text suggestions
+  input.addEventListener('input', function() {
+    const query = this.value.trim();
+    const resultsContainer = this.parentElement.nextElementSibling;
+    
+    if (query.length < 1) {
+      resultsContainer.innerHTML = getDiscoveryHTML();
+      resultsContainer.style.display = 'block';
+      return;
+    }
+    
+    // First, instantly generate SHEIN style typed keyword lines
+    let finalHTML = getStaticSuggestionsHTML(query);
+    
+    // Secondly, fetch live items from your backend smoothly
+    fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(d => {
+        const prod = d.products || [];
+        if (prod && prod.length > 0) {
+          let productHTML = '';
+          prod.slice(0, 4).forEach(p => {
+            let imgUrl = p.images && p.images[0] ? p.images[0].url : 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';
+            let titleStr = p.name || p.title || 'Product';
+            let priceStr = p.unitPrice ? p.unitPrice.formatted : '';
+            productHTML += `<a href="/products/${p.slug||p.id}" class="adl-search-item">
+              <img src="${imgUrl}">
+              <div class="adl-item-info">
+                <span class="adl-item-title">${titleStr}</span>
+                <span class="adl-item-price">${priceStr}</span>
+              </div>
+            </a>`;
+          });
+          // Combine both keyword text shortcuts and dynamic item cards beautifully
+          resultsContainer.innerHTML = finalHTML + productHTML;
+          resultsContainer.style.display = 'block';
+        } else {
+          if(finalHTML !== '') {
+            resultsContainer.innerHTML = finalHTML;
+            resultsContainer.style.display = 'block';
+          } else {
+            resultsContainer.style.display = 'none';
+          }
+        }
+      })
+      .catch(() => {
+        if(finalHTML !== '') {
+          resultsContainer.innerHTML = finalHTML;
+          resultsContainer.style.display = 'block';
+        } else {
+          resultsContainer.style.display = 'none';
+        }
+      });
+  });
+});
+
+// Hide popups when clicking outside the container boxes
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.adl-search-container') && !e.target.closest('.adl-mobile-search-box') && !e.target.classList.contains('adl-live-input')) {
+    document.querySelectorAll('.adl-live-search-results').forEach(r => r.style.display = 'none');
+  }
+});
 // =========================================================================
 
-document.querySelectorAll('.adl-live-input').forEach(i=>{i.addEventListener('input',function(){const q=this.value.trim();const r=this.parentElement.nextElementSibling;if(q.length<1){r.style.display='none';return}fetch(`/api/search?q=${encodeURIComponent(q)}`).then(res=>res.json()).then(d=>{const prod=d.products||[];if(prod&&prod.length>0){let h='';prod.slice(0,6).forEach(p=>{let imgUrl=p.images&&p.images[0]?p.images[0].url:'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';let titleStr=p.name||p.title||'Product';let priceStr=p.unitPrice?p.unitPrice.formatted:'';h+=`<a href="/products/${p.slug||p.id}" class="adl-search-item"><img src="${imgUrl}"><div class="adl-item-info"><span class="adl-item-title">${titleStr}</span><span class="adl-item-price">${priceStr}</span></div></a>`});r.innerHTML=h;r.style.display='block'}else{r.style.display='none'}}).catch(()=>{r.style.display='none'})})});
-document.addEventListener('click',function(e){if(!e.target.closest('.adl-search-container')&&!e.target.closest('.adl-mobile-search-box')&&!e.target.classList.contains('adl-live-input')){document.querySelectorAll('.adl-live-search-results').forEach(r=>r.style.display='none')}});
 const scnt=document.getElementById('adl-scroll-menu');if(scnt){document.getElementById('scroll-left').onclick=()=>scnt.scrollBy({left:-200,behavior:'smooth'});document.getElementById('scroll-right').onclick=()=>scnt.scrollBy({left:200,behavior:'smooth'})}
 function updateAllCartCounters(count,items){document.querySelectorAll(".fw-cart-count").forEach(e=>{e.textContent=count||0;if(count>0){e.classList.add("has-items")}else{e.classList.remove("has-items")}});const container=document.getElementById("adl-desktop-mini-items");if(!container)return;if(!items||items.length===0){container.innerHTML='<div class="adl-mini-cart-empty">Your cart is empty</div>';return}let h='';items.forEach(i=>{if(!i)return;let img=i.image||(i.images&&i.images[0]?i.images[0].url:i.product?.images?.[0]?.url)||'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';let name=i.name||i.title||i.product?.name||'Item';let price=i.price?.formatted||i.unitPrice?.formatted||(i.price?`$${(i.price/100).toFixed(2)}`:'');let qty=i.quantity||i.qty||1;h+=`<div class="adl-mini-item"><img src="${img}"><div class="adl-mini-details"><span class="adl-mini-name">${name}</span><span class="adl-mini-qty-price">${qty} x ${price}</span></div></div>`});container.innerHTML=h}
 function fetchCartDataDirectly(){if(window.Fourthwall&&typeof window.Fourthwall.getCart==="function"){window.Fourthwall.getCart().then(function(c){if(c)updateAllCartCounters(c.itemCount||c.total_quantity||0,c.items||[])}).catch(()=>{fetchShopifyAlternative()})}else{fetchShopifyAlternative()}}
