@@ -235,7 +235,68 @@ document.addEventListener('click', function(e) {
 });
 
 const scnt=document.getElementById('adl-scroll-menu');if(scnt){document.getElementById('scroll-left').onclick=()=>scnt.scrollBy({left:-200,behavior:'smooth'});document.getElementById('scroll-right').onclick=()=>scnt.scrollBy({left:200,behavior:'smooth'})}
-function updateAllCartCounters(count,items){document.querySelectorAll(".fw-cart-count").forEach(e=>{e.innerText=count;if(count>0){e.classList.add("has-items")}else{e.classList.remove("has-items")}})}
+
+// 🔴 RED BADGE & 123 COUNT MECHANICS FOR CART COUNTERS
+function updateAllCartCounters(count, items) {
+  document.querySelectorAll(".fw-cart-count").forEach(e => {
+    e.innerText = count;
+    if (count > 0) {
+      e.classList.add("has-items");
+      e.style.background = "#ff0000"; // Force 100% Red background natively
+    } else {
+      e.classList.remove("has-items");
+      e.style.background = "#777";
+    }
+  });
+  // Update hover mini cart data if items list is fetched natively or fallback
+  updateMiniCartHTML(items);
+}
+
+// 📦 LIVE HOVER MINI CART RENDER LOGIC
+function updateMiniCartHTML(items) {
+  const container = document.getElementById("adl-desktop-mini-items");
+  if (!container) return;
+
+  if (items && items.length > 0) {
+    let html = "";
+    items.forEach(item => {
+      let img = item.variant?.image?.url || item.product?.images?.[0]?.url || 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png';
+      let name = item.product?.name || 'Product item';
+      let qty = item.quantity || 1;
+      let price = item.price?.formatted || '';
+      html += `
+        <div class="adl-mini-item">
+          <img src="${img}">
+          <div class="adl-mini-details">
+            <span class="adl-mini-name">${name}</span>
+            <span class="adl-mini-qty-price">${qty} x ${price}</span>
+          </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+  } else {
+    // Check Fourthwall native runtime cart context directly if parameters missed
+    if (typeof Fourthwall !== 'undefined' && Fourthwall.cart && Fourthwall.cart.items) {
+      const fwItems = Fourthwall.cart.items;
+      if (fwItems.length > 0) {
+        let html = "";
+        fwItems.forEach(item => {
+          html += `
+            <div class="adl-mini-item">
+              <img src="${item.image?.url || 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-icon.png'}">
+              <div class="adl-mini-details">
+                <span class="adl-mini-name">${item.name}</span>
+                <span class="adl-mini-qty-price">${item.quantity} x ${item.price?.formatted || ''}</span>
+              </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+        return;
+      }
+    }
+    container.innerHTML = '<div class="adl-mini-cart-empty">Your cart is empty</div>';
+  }
+}
 
 /* 🔄 AUTO-UPDATE LIVE FUNCTIONALITY (CART & WISHLIST) */
 function updateLiveWishlistBadges() {
@@ -253,46 +314,40 @@ function updateLiveWishlistBadges() {
 document.addEventListener("DOMContentLoaded", () => {
   updateLiveWishlistBadges();
   
-  // Storage එක වෙනස් වන හැම වෙලාවකම Wishlist එක update කිරීම
   window.addEventListener("storage", (e) => { 
     if(e.key === "wishlist") updateLiveWishlistBadges(); 
   });
   
-  // LocalStorage.setItem එක Override කරමින් Wishlist එක ක්ලික් කල සැනෙකින් Badge එක Update කිරීම
   const originalSetItem = localStorage.setItem;
   localStorage.setItem = function(key, value) {
     originalSetItem.apply(this, arguments);
     if(key === "wishlist") updateLiveWishlistBadges();
   };
 
-  // ලෝකල් එකේ සිදුවන Wishlist Click Event එකක් හරහා ක්ෂණිකව Badge එක update කිරීම
   document.addEventListener("click", () => {
     setTimeout(updateLiveWishlistBadges, 50);
   });
   
-  // ⚡ 100% REAL-TIME FOURTHWALL CART OBSERVER & AUTO-SYNC
+  // ⚡ real-time fourthwall cart event hooks
   if(typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-    // Fourthwall Cart Update Event Listener
     Fourthwall.cart.on('update', (cart) => { 
-      if(cart) updateAllCartCounters(cart.totalCount || 0); 
+      if(cart) updateAllCartCounters(cart.totalCount || 0, cart.items); 
     });
-    // Initial fetch to sync up right away
-    updateAllCartCounters(Fourthwall.cart.totalCount || 0);
+    updateAllCartCounters(Fourthwall.cart.totalCount || 0, Fourthwall.cart.items);
   }
 
-  // 🔄 BACKGROUND POLLING: සයිට් එකේ කොහෙන් Cart එක වෙනස් කලත් තත්පරයෙන් තත්පරයට අගයන් Sync කරන ලොජික් එක
+  // Polling tracker loop to sync native layout additions safely every 800ms
   setInterval(() => {
     updateLiveWishlistBadges();
     if(typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-      updateAllCartCounters(Fourthwall.cart.totalCount || 0);
+      updateAllCartCounters(Fourthwall.cart.totalCount || 0, Fourthwall.cart.items);
     } else {
-      // Fourthwall Window Object එකෙන් කෙලින්ම Data ඇදගැනීම (Fallback)
       const fwCartRoot = document.querySelector('[data-cart-count], .fw-cart-count-badge');
       if(fwCartRoot && fwCartRoot.innerText.trim() !== "") {
         const parsedCount = parseInt(fwCartRoot.innerText.trim(), 10);
         if(!isNaN(parsedCount)) updateAllCartCounters(parsedCount);
       }
     }
-  }, 1000);
+  }, 800);
 });
 </script>
