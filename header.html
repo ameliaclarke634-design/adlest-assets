@@ -1,67 +1,159 @@
-<style>
-  /* පරණ හෙඩර් එක අයින් කරනවා */
-  div[class*="Header"], header[class*="header"], .fw-header, #shopify-section-header, .site-header {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-</style>
+/* ============================================================
+   ADLEST STORE — Custom Header Live Updater (Production Fix)
+   ============================================================ */
 
-<div id="adl-injected-header"></div>
+(function () {
 
-<script>
-  (function () {
-    // jsDelivr ලින්ක් එක කෙලින්ම පාවිච්චි කරනවා
-    const finalFetchUrl = 'https://cdn.jsdelivr.net/gh/ameliaclarke634-design/adlest-assets@main/header.html';
+  /* ----------------------------------------------------------
+     1. SELECTORS — Mapped exactly to ADLEST HTML structure
+     ---------------------------------------------------------- */
+  const CART_BADGE_SEL     = '.fw-cart-count'; 
+  const WISHLIST_BADGE_SEL = '#adl-dk-heart-badge'; 
+  const WISHLIST_MB_SEL    = '#adl-mb-heart-badge';
+  const CART_ICON_SEL      = '#adl-cart-hover-trigger'; // Your exact HTML Wrapper ID
+  const MINI_CART_SEL      = '#adl-mini-cart-dropdown';  // Your exact HTML Dropdown ID
+  const WISHLIST_KEY       = 'wishlist';                 // Your exact key
 
-    /**
-     * 🛠️ PART 1 — Chatbot's Script Re-Executor
-     * HTML එක Inject වුණාට පස්සේ ඒ ඇතුලේ තියෙන ස්ක්‍රිප්ට් බලෙන්ම රන් කරවන කොටස
-     */
-    function reExecuteInjectedScripts(container) {
-      const scripts = Array.from(container.querySelectorAll('script'));
 
-      scripts.forEach(function (oldScript) {
-        const newScript = document.createElement('script');
-
-        // Copy all attributes (type, src, defer, async, data-*, etc.)
-        Array.from(oldScript.attributes).forEach(function (attr) {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-
-        // Copy inline script body
-        if (oldScript.textContent) {
-          newScript.textContent = oldScript.textContent;
+  /* ----------------------------------------------------------
+     2. HELPERS — Using style.setProperty to bypass CSS !important
+     ---------------------------------------------------------- */
+  function setBadge(selector, count) {
+    document.querySelectorAll(selector).forEach(el => {
+      if (!el) return;
+      el.textContent = count;
+      if (count > 0) {
+        el.classList.add("has-items");
+        el.style.setProperty('background', '#ff0000', 'important');
+        el.style.setProperty('display', selector.startsWith('#') ? 'flex' : 'inline-block', 'important');
+      } else {
+        el.classList.remove("has-items");
+        if (!selector.startsWith('#')) {
+          el.style.setProperty('background', '#777', 'important');
+        } else {
+          el.style.setProperty('display', 'none', 'important');
         }
+      }
+    });
+  }
 
-        // Replace in-place so relative DOM position is preserved
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-      });
+  function setWishlistBadge(id, count) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = count;
+    el.style.setProperty('display', count > 0 ? 'flex' : 'none', 'important');
+  }
+
+  function getWishlistCount() {
+    try {
+      const raw = localStorage.getItem(WISHLIST_KEY);
+      if (!raw) return 0;
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data.length : (data.items?.length ?? 0);
+    } catch {
+      return 0;
+    }
+  }
+
+
+  /* ----------------------------------------------------------
+     3. CART BADGE — Native & Property Fallbacks Fixed
+     ---------------------------------------------------------- */
+  function initCartBadge() {
+    const getCount = (cart) => cart?.itemCount ?? cart?.item_count ?? 0;
+
+    if (window.Fourthwall?.cart) {
+      setBadge(CART_BADGE_SEL, getCount(window.Fourthwall.cart));
     }
 
-    // HTML එක Fetch කරලා Inject කිරීම
-    fetch(finalFetchUrl)
-      .then(r => {
-        if (!r.ok) throw new Error("Header load failed");
-        return r.text();
-      })
-      .then(htmlData => {
-        const container = document.getElementById('adl-injected-header');
-        container.innerHTML = htmlData;
-
-        // 🚀 බොට් කියපු ප්‍රධානතම පියවර — ඉන්ජෙක්ට් කරපු ගමන් ස්ක්‍රිප්ට් ටික රී-එක්සිකියුට් කරනවා
-        reExecuteInjectedScripts(container);
-      })
-      .catch(err => {
-        console.error("Error loading header:", err);
-        // මොකක් හරි වෙලා හෙඩර් එක ලෝඩ් වුනේ නැත්නම් පරණ එක ආයේ පෙන්වනවා
-        const fallbackStyle = document.createElement('style');
-        fallbackStyle.textContent = 'div[class*="Header"], header[class*="header"], .fw-header, #shopify-section-header, .site-header { display: block !important; visibility: visible !important; height: auto !important; opacity: 1 !important; pointer-events: auto !important; }';
-        document.head.appendChild(fallbackStyle);
+    if (window.Fourthwall?.on) {
+      window.Fourthwall.on('cart:change', function (cart) {
+        setBadge(CART_BADGE_SEL, getCount(cart));
       });
-  })();
-</script>
+    } else {
+      let attempts = 0;
+      const poll = setInterval(function () {
+        attempts++;
+        if (window.Fourthwall?.on) {
+          clearInterval(poll);
+          window.Fourthwall.on('cart:change', function (cart) {
+            setBadge(CART_BADGE_SEL, getCount(cart));
+          });
+          setBadge(CART_BADGE_SEL, getCount(window.Fourthwall.cart));
+        }
+        if (attempts > 40) clearInterval(poll); 
+      }, 100);
+    }
+  }
+
+
+  /* ----------------------------------------------------------
+     4. WISHLIST BADGE — Dual Badge Update
+     ---------------------------------------------------------- */
+  function initWishlistBadge() {
+    const updateAllWishlists = () => {
+      const count = getWishlistCount();
+      setWishlistBadge('adl-dk-heart-badge', count);
+      setWishlistBadge('adl-mb-heart-badge', count);
+    };
+
+    updateAllWishlists();
+
+    window.addEventListener('storage', function (e) {
+      if (e.key === WISHLIST_KEY) {
+        updateAllWishlists();
+      }
+    });
+
+    window.addEventListener('wishlist:change', updateAllWishlists);
+    window.addEventListener('wishlistUpdated', updateAllWishlists);
+  }
+
+
+  /* ----------------------------------------------------------
+     5. MINI-CART HOVER — Bypass CSS !important Restrictions
+     ---------------------------------------------------------- */
+  function initMiniCartHover() {
+    const cartIcon  = document.querySelector(CART_ICON_SEL);
+    const miniCart  = document.querySelector(MINI_CART_SEL);
+    if (!cartIcon || !miniCart) return;
+
+    let hideTimer = null;
+
+    function showMiniCart() {
+      clearTimeout(hideTimer);
+      // CSS !important එක override කරන්න setProperty පාවිච්චි කරනවා
+      miniCart.style.setProperty('display', 'block', 'important');
+      miniCart.classList.add('is-visible');
+    }
+
+    function scheduleMiniCartHide() {
+      hideTimer = setTimeout(function () {
+        miniCart.style.setProperty('display', 'none', 'important');
+        miniCart.classList.remove('is-visible');
+      }, 200); 
+    }
+
+    cartIcon.addEventListener('mouseenter', showMiniCart);
+    cartIcon.addEventListener('mouseleave', scheduleMiniCartHide);
+    miniCart.addEventListener('mouseenter', showMiniCart);
+    miniCart.addEventListener('mouseleave', scheduleMiniCartHide);
+  }
+
+
+  /* ----------------------------------------------------------
+     6. BOOT RUNNER
+     ---------------------------------------------------------- */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  function boot() {
+    initCartBadge();
+    initWishlistBadge();
+    initMiniCartHover();
+  }
+
+})();
