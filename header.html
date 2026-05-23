@@ -52,7 +52,7 @@
           <span>Change Language</span>
         </div>
         <div class="adl-extra-row-right">English <span>&nbsp;</span></div>
-      </div>
+      </a>
 
       <div class="adl-extra-row adl-accordion-header" onclick="toggleSheinInfoAccordion()">
         <div class="adl-extra-row-left">
@@ -290,62 +290,25 @@ function updateLiveWishlistBadges() {
   try {
     const wishlistItems = JSON.parse(localStorage.getItem('wishlist')) || [];
     const count = wishlistItems.length;
-    
     const dBadge = document.getElementById('adl-dk-heart-badge');
     const mBadge = document.getElementById('adl-mb-heart-badge');
     
-    [dBadge, mBadge].forEach(badge => {
-      if (badge) {
-        badge.innerText = count;
-        if (count > 0) {
-          badge.style.setProperty('display', 'flex', 'important');
-        } else {
-          badge.style.setProperty('display', 'none', 'important');
-        }
-      }
-    });
+    if (dBadge) {
+      dBadge.innerText = count;
+      dBadge.style.display = count > 0 ? 'flex' : 'none';
+    }
+    if (mBadge) {
+      mBadge.innerText = count;
+      mBadge.style.display = count > 0 ? 'flex' : 'none';
+    }
   } catch (e) {
-    console.error("Wishlist update error:", e);
+    console.error("Wishlist badge update failed:", e);
   }
 }
 
-function syncFourthwallCart() {
-  if (typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-    const cart = Fourthwall.cart;
-    updateAllCartCounters(cart.itemCount || 0, cart.items || []);
-  }
+// Run functions initially to ensure badges align correctly on load
+updateLiveWishlistBadges();
+if (typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
+  updateAllCartCounters(Fourthwall.cart.itemCount || 0, Fourthwall.cart.items || []);
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-  updateLiveWishlistBadges();
-  syncFourthwallCart();
-  
-  if (typeof Fourthwall !== 'undefined' && Fourthwall.on) {
-    Fourthwall.on('cart:change', function(cart) {
-      if (cart) {
-        updateAllCartCounters(cart.itemCount || 0, cart.items || []);
-      }
-    });
-  }
-  
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'wishlist') {
-      updateLiveWishlistBadges();
-    }
-  });
-  
-  window.addEventListener('wishlistUpdated', updateLiveWishlistBadges);
-});
-
-setInterval(function() {
-  updateLiveWishlistBadges();
-  if (typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-    const count = Fourthwall.cart.itemCount || 0;
-    const items = Fourthwall.cart.items || [];
-    const currentBadge = document.querySelector(".fw-cart-count");
-    if (currentBadge && parseInt(currentBadge.innerText) !== count) {
-       updateAllCartCounters(count, items);
-    }
-  }
-}, 2000);
 </script>
