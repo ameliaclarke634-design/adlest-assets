@@ -248,16 +248,51 @@ function updateLiveWishlistBadges() {
     if(mBadge) { mBadge.innerText = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
   } catch(e) { console.error("Wishlist badge error:", e); }
 }
+
+// 🛒 100% LIVE CART & WISHLIST SYNC LISTENERS
 document.addEventListener("DOMContentLoaded", () => {
   updateLiveWishlistBadges();
-  window.addEventListener("storage", (e) => { if(e.key === "wishlist") updateLiveWishlistBadges(); });
+  
+  // Storage එක වෙනස් වන හැම වෙලාවකම Wishlist එක update කිරීම
+  window.addEventListener("storage", (e) => { 
+    if(e.key === "wishlist") updateLiveWishlistBadges(); 
+  });
+  
+  // LocalStorage.setItem එක Override කරමින් Wishlist එක ක්ලික් කල සැනෙකින් Badge එක Update කිරීම
   const originalSetItem = localStorage.setItem;
   localStorage.setItem = function(key, value) {
     originalSetItem.apply(this, arguments);
     if(key === "wishlist") updateLiveWishlistBadges();
   };
+
+  // ලෝකල් එකේ සිදුවන Wishlist Click Event එකක් හරහා ක්ෂණිකව Badge එක update කිරීම
+  document.addEventListener("click", () => {
+    setTimeout(updateLiveWishlistBadges, 50);
+  });
+  
+  // ⚡ 100% REAL-TIME FOURTHWALL CART OBSERVER & AUTO-SYNC
   if(typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-    Fourthwall.cart.on('update', (cart) => { if(cart) updateAllCartCounters(cart.totalCount || 0); });
+    // Fourthwall Cart Update Event Listener
+    Fourthwall.cart.on('update', (cart) => { 
+      if(cart) updateAllCartCounters(cart.totalCount || 0); 
+    });
+    // Initial fetch to sync up right away
+    updateAllCartCounters(Fourthwall.cart.totalCount || 0);
   }
+
+  // 🔄 BACKGROUND POLLING: සයිට් එකේ කොහෙන් Cart එක වෙනස් කලත් තත්පරයෙන් තත්පරයට අගයන් Sync කරන ලොජික් එක
+  setInterval(() => {
+    updateLiveWishlistBadges();
+    if(typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
+      updateAllCartCounters(Fourthwall.cart.totalCount || 0);
+    } else {
+      // Fourthwall Window Object එකෙන් කෙලින්ම Data ඇදගැනීම (Fallback)
+      const fwCartRoot = document.querySelector('[data-cart-count], .fw-cart-count-badge');
+      if(fwCartRoot && fwCartRoot.innerText.trim() !== "") {
+        const parsedCount = parseInt(fwCartRoot.innerText.trim(), 10);
+        if(!isNaN(parsedCount)) updateAllCartCounters(parsedCount);
+      }
+    }
+  }, 1000);
 });
 </script>
