@@ -52,7 +52,7 @@
           <span>Change Language</span>
         </div>
         <div class="adl-extra-row-right">English <span>&nbsp;</span></div>
-      </a>
+      </div>
 
       <div class="adl-extra-row adl-accordion-header" onclick="toggleSheinInfoAccordion()">
         <div class="adl-extra-row-left">
@@ -290,51 +290,62 @@ function updateLiveWishlistBadges() {
   try {
     const wishlistItems = JSON.parse(localStorage.getItem('wishlist')) || [];
     const count = wishlistItems.length;
+    
     const dBadge = document.getElementById('adl-dk-heart-badge');
     const mBadge = document.getElementById('adl-mb-heart-badge');
-    if(dBadge) { dBadge.innerText = count; dBadge.style.display = count > 0 ? 'flex' : 'none'; }
-    if(mBadge) { mBadge.innerText = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
-  } catch(e) { console.error("Wishlist badge error:", e); }
+    
+    [dBadge, mBadge].forEach(badge => {
+      if (badge) {
+        badge.innerText = count;
+        if (count > 0) {
+          badge.style.setProperty('display', 'flex', 'important');
+        } else {
+          badge.style.setProperty('display', 'none', 'important');
+        }
+      }
+    });
+  } catch (e) {
+    console.error("Wishlist update error:", e);
+  }
 }
 
-// 🛒 REAL-TIME SYNC EXECUTION HOOKS
-document.addEventListener("DOMContentLoaded", () => {
-  updateLiveWishlistBadges();
-  
-  window.addEventListener("storage", (e) => { 
-    if(e.key === "wishlist") updateLiveWishlistBadges(); 
-  });
-  
-  const originalSetItem = localStorage.setItem;
-  localStorage.setItem = function(key, value) {
-    originalSetItem.apply(this, arguments);
-    if(key === "wishlist") updateLiveWishlistBadges();
-  };
-
-  document.addEventListener("click", () => {
-    setTimeout(updateLiveWishlistBadges, 50);
-  });
-  
-  // Connect Fourthwall dynamic custom framework handlers
-  if(typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-    Fourthwall.cart.on('update', (cart) => { 
-      if(cart) updateAllCartCounters(cart.totalCount || 0, cart.items); 
-    });
-    updateAllCartCounters(Fourthwall.cart.totalCount || 0, Fourthwall.cart.items);
+function syncFourthwallCart() {
+  if (typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
+    const cart = Fourthwall.cart;
+    updateAllCartCounters(cart.itemCount || 0, cart.items || []);
   }
+}
 
-  // Dual-Failsafe Interval Loop to pull count data every 500ms seamlessly
-  setInterval(() => {
-    updateLiveWishlistBadges();
-    if(typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
-      updateAllCartCounters(Fourthwall.cart.totalCount || 0, Fourthwall.cart.items);
-    } else {
-      const nativeFWCountEl = document.querySelector('[data-cart-count], .fw-cart-count-badge, .cart-count');
-      if(nativeFWCountEl && nativeFWCountEl.innerText.trim() !== "") {
-        const parsedCount = parseInt(nativeFWCountEl.innerText.trim(), 10);
-        if(!isNaN(parsedCount)) updateAllCartCounters(parsedCount);
+document.addEventListener("DOMContentLoaded", function() {
+  updateLiveWishlistBadges();
+  syncFourthwallCart();
+  
+  if (typeof Fourthwall !== 'undefined' && Fourthwall.on) {
+    Fourthwall.on('cart:change', function(cart) {
+      if (cart) {
+        updateAllCartCounters(cart.itemCount || 0, cart.items || []);
       }
+    });
+  }
+  
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'wishlist') {
+      updateLiveWishlistBadges();
     }
-  }, 500);
+  });
+  
+  window.addEventListener('wishlistUpdated', updateLiveWishlistBadges);
 });
+
+setInterval(function() {
+  updateLiveWishlistBadges();
+  if (typeof Fourthwall !== 'undefined' && Fourthwall.cart) {
+    const count = Fourthwall.cart.itemCount || 0;
+    const items = Fourthwall.cart.items || [];
+    const currentBadge = document.querySelector(".fw-cart-count");
+    if (currentBadge && parseInt(currentBadge.innerText) !== count) {
+       updateAllCartCounters(count, items);
+    }
+  }
+}, 2000);
 </script>
